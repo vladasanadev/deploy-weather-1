@@ -28,10 +28,26 @@ currentTimeDate.innerHTML = formatedDate(currentTime);
 
 ///
 
+function searchCity(city) {
+  let apiKey = "c00315bc8e5475ad20314024ada12a35";
+  let units = "metric";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=${units}`;
+  axios.get(apiUrl).then(showTemperature);
+}
+
+function ShowCity(event) {
+  event.preventDefault();
+  let city = document.querySelector("#search-input").value;
+  searchCity(city);
+}
+
 function showTemperature(response) {
   console.log(response.data);
   document.querySelector("#city").innerHTML = response.data.name;
   document.querySelector("#DayTemperature").innerHTML = Math.round(
+    response.data.main.temp
+  );
+  document.querySelector("#NightTemperature").innerHTML = Math.round(
     response.data.main.temp
   );
   document.querySelector("#Humidity").innerHTML = response.data.main.humidity;
@@ -43,26 +59,13 @@ function showTemperature(response) {
   );
 }
 
-function searchCity(city) {
-  let apiKey = "c00315bc8e5475ad20314024ada12a35";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units="metric"`;
-  axios.get(apiUrl).then(showTemperature);
-}
-
-function ShowCity(event) {
-  event.preventDefault();
-  let city = document.querySelector("#search-input");
-  let cityName = document.querySelector(".data.main.name");
-  cityName = input.value;
-  searchCity(city);
-}
-
 function showPosition(position) {
   let latitude = position.coords.latitude;
   let longitude = position.coords.longitude;
   console.log(position);
   let apiKey = "c00315bc8e5475ad20314024ada12a35";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units="metric"`;
+  let units = "metric";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=${units}`;
   axios.get(apiUrl).then(showTemperature);
 }
 
@@ -71,16 +74,27 @@ function getCurrentPosition(event) {
   navigator.geolocation.getCurrentPosition(showPosition);
 }
 
-let searchForm = document.querySelector("#search-form");
-searchForm.addEventListener("submit", ShowCity);
 let CurentButton = document.querySelector("#current-location-button");
 CurentButton.addEventListener("click", getCurrentPosition);
+
+let searchForm = document.querySelector("#search-form");
+searchForm.addEventListener("submit", ShowCity);
+
 searchCity("Vilnius");
+
 ///
-function convertToFarenheit(event) {
+function convertToFarenheitDay(event) {
   event.preventDefault();
   let DayTemperature = document.querySelector("#DayTemperature");
-  DayTemperature.innerHTML = 47;
+  let NewDayTemperature = DayTemperature.innerHTML;
+  NewDayTemperature = Number(NewDayTemperature);
+  DayTemperature.innerHTML = Math.round((NewDayTemperature * 9) / 5 + 32);
+}
+function convertToFarenheitNight(event) {
+  let NightTemperature = document.querySelector("#NightTemperature");
+  let NewNightTemperature = NightTemperature.innerHTML;
+  NewNightTemperature = Number(NewNightTemperature);
+  NightTemperature.innerHTML = Math.round((NewNightTemperature * 9) / 5 + 32);
 }
 
 function convertToCelciusDay(event) {
@@ -88,3 +102,20 @@ function convertToCelciusDay(event) {
   let DayTemperature = document.querySelector("#DayTemperature");
   DayTemperature.innerHTML = 7;
 }
+
+function convertToCelciusNight(event) {
+  event.preventDefault();
+  let NightTemperature = document.querySelector("#NightTemperature");
+  NightTemperature.innerHTML = 1;
+}
+
+let temperatureFarenheitDay = document.querySelector("#fahrenheit-link");
+temperatureFarenheitDay.addEventListener("click", convertToFarenheitDay);
+
+let temperatureFarenheitNight = document.querySelector("#fahrenheit-link");
+temperatureFarenheitNight.addEventListener("click", convertToFarenheitNight);
+
+let temperatureCelciusDay = document.querySelector("#celcius-link");
+temperatureCelciusDay.addEventListener("click", convertToCelciusDay);
+let temperatureCelciusNight = document.querySelector("#celcius-link");
+temperatureCelciusNight.addEventListener("click", convertToCelciusNight);
